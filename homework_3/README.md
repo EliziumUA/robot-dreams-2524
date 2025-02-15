@@ -1,6 +1,6 @@
 ## Create directory
-mkdir storage
-cd storage
+mkdir roman_podobnyi
+cd roman_podobnyi
 mkdir homework_3
 cd homework_3
 
