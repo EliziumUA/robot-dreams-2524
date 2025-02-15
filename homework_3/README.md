@@ -1,8 +1,8 @@
 ## Create directory
-mkdir Storage
-cd Storage
-mkdir Homework3
-cd Homework3
+mkdir storage
+cd storage
+mkdir homework_3
+cd homework_3
 
 ## Create files
 nano Dockerfile
