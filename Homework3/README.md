@@ -2,6 +2,7 @@
 mkdir Storage
 cd Storage
 mkdir Homework3
+cd Homework3
 
 ## Create files
 nano Dockerfile
