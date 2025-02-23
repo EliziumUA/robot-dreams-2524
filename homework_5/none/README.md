@@ -1,3 +1,5 @@
+# None network
+
 ## Create directory
 mkdir roman_podobnyi
 cd roman_podobnyi
@@ -6,9 +8,10 @@ cd homework_5
 mkdir none
 cd none
 
-## None network
+## Run container
 docker run -d --name container4 --network none busybox sleep 3600
 
+## Inspect container
 docker inspect container4 | grep -i "network"
 
 ```code
@@ -18,6 +21,7 @@ docker inspect container4 | grep -i "network"
             "NetworkID": "4aac27574d385dcb963e17fa8f462fe8a0446357b2f653129b5cc44cfbe08ab3",
 ```
 
+## Check container networks
 docker exec -it container4 ip a
 
 ```code
@@ -29,5 +33,8 @@ docker exec -it container4 ip a
        valid_lft forever preferred_lft forever
 ```
 
+## Stop container
 docker stop 9a41f7a9adfc
+
+## Delete container
 docker rm 9a41f7a9adfc

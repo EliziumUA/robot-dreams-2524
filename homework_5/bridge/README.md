@@ -1,3 +1,5 @@
+# Bridge network
+
 ## Create directory
 mkdir roman_podobnyi
 cd roman_podobnyi
@@ -6,12 +8,14 @@ cd homework_5
 mkdir bridge
 cd bridge
 
-## Bridge network
+## Create network
 docker network create my_bridge_network
 
+## Run containers
 docker run -d --name container1 --network my_bridge_network busybox sleep 3600
 docker run -d --name container2 --network my_bridge_network busybox sleep 3600
 
+## Inspect containers
 docker inspect container1 | grep -i "network"
 docker inspect container2 | grep -i "network"
 
@@ -31,6 +35,7 @@ docker inspect container2 | grep -i "network"
             "NetworkID": "514574bdfb9f9c385cfc4fdf5c5891bd8a1bc3650f6392f68ef7a1b9ec7b21d8",
 ```
 
+## Check containers networks
 docker exec -it container1 ip a
 docker exec -it container2 ip a
 
@@ -60,6 +65,7 @@ docker exec -it container2 ip a
        valid_lft forever preferred_lft forever
 ```
 
+## Ping containers
 docker exec -it container1 ping -c 3 container2
 docker exec -it container2 ping -c 3 container1
 
@@ -83,10 +89,13 @@ PING container1 (172.18.0.2): 56 data bytes
 round-trip min/avg/max = 0.078/0.094/0.104 ms
 ```
 
+## Stop containers
 docker stop e2043496e515
 docker stop a15b42272686
 
+## Delete containers
 docker rm e2043496e515
 docker rm a15b42272686
 
+## Delete network
 docker network rm my_bridge_network
