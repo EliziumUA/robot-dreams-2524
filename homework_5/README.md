@@ -49,6 +49,61 @@ docker rm cd373e6010ed
 docker rm 1122813be50a
 docker network rm my_bridge_network
 
-## Host network
 ## None network
+docker run -d --name container3 --network none busybox sleep 3600
+docker inspect container3 | grep -i "network"
+
+```code
+"NetworkMode": "none",
+"NetworkSettings": {
+    "Networks": {
+            "NetworkID": "4aac27574d385dcb963e17fa8f462fe8a0446357b2f653129b5cc44cfbe08ab3",
+```
+
+docker exec -it container3 ip a
+
+```code
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+```
+
+docker stop 2079e61061c2
+docker rm 2079e61061c2
+
+## Host network
+docker run -d --name container4 --network host busybox sleep 3600
+docker inspect container4 | grep -i "network"
+
+```code
+"NetworkMode": "host",
+"NetworkSettings": {
+    "Networks": {
+            "NetworkID": "d1b6a6789515bb03586edb8679f5a5d3941f6b93bb4903b1a85fe7fbbd6e087a",
+```
+
+docker exec -it container4 ip a
+
+```code
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute 
+       valid_lft forever preferred_lft forever
+.........
+.........
+.........
+145: calibdb5b920573@enp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue qlen 1000
+    link/ether ee:ee:ee:ee:ee:ee brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::ecee:eeff:feee:eeee/64 scope link 
+       valid_lft forever preferred_lft forever
+```
+
+docker stop d556fdd39de2
+docker rm d556fdd39de2
+
 ## Macvlan network
