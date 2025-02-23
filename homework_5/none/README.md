@@ -21,7 +21,7 @@ docker inspect container4 | grep -i "network"
             "NetworkID": "4aac27574d385dcb963e17fa8f462fe8a0446357b2f653129b5cc44cfbe08ab3",
 ```
 
-## Check container networks
+## Display container network interfaces
 docker exec -it container4 ip a
 
 ```code
@@ -34,7 +34,7 @@ docker exec -it container4 ip a
 ```
 
 ## Stop container
-docker stop 9a41f7a9adfc
+docker stop container4
 
 ## Delete container
-docker rm 9a41f7a9adfc
+docker rm container4

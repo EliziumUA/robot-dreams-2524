@@ -35,7 +35,7 @@ docker inspect container2 | grep -i "network"
             "NetworkID": "514574bdfb9f9c385cfc4fdf5c5891bd8a1bc3650f6392f68ef7a1b9ec7b21d8",
 ```
 
-## Check containers networks
+## Display containers network interfaces
 docker exec -it container1 ip a
 docker exec -it container2 ip a
 
@@ -90,12 +90,12 @@ round-trip min/avg/max = 0.078/0.094/0.104 ms
 ```
 
 ## Stop containers
-docker stop e2043496e515
-docker stop a15b42272686
+docker stop container1
+docker stop container2
 
 ## Delete containers
-docker rm e2043496e515
-docker rm a15b42272686
+docker rm container1
+docker rm container2
 
 ## Delete network
 docker network rm my_bridge_network

@@ -20,12 +20,12 @@ docker exec -ti container1 vi /data/payload.txt
 docker exec -ti container2 cat /data/payload.txt
 
 ## Stop containers
-docker stop be9a3988ae98
-docker stop c2d11bc6c763
+docker stop container1
+docker stop container2
 
 ## Delete containers
-docker rm be9a3988ae98
-docker rm c2d11bc6c763
+docker rm container1
+docker rm container2
 
 ## Delete volume
 docker volume rm my_volume
