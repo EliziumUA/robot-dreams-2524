@@ -5,6 +5,7 @@ mkdir homework_6
 cd homework_6
 
 ## Create .env
+nano .env
 ```code
 GF_SECURITY_ADMIN_PASSWORD=admin
 GF_DASHBOARD_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/dashboards/default-dashboard.json
