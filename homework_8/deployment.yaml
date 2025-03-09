@@ -1,0 +1,19 @@
+apiVersion: apps/v1  # Specifies the API version to use for the resource, here we are using version 'v1' for deployments
+kind: Deployment  # Defines the kind of resource, in this case, a Deployment
+metadata:
+  name: my-deployment  # The name of the deployment
+spec:
+  replicas: 3  # The number of replicas (pods) to maintain for this deployment
+  selector:  # Defines how to select the pods managed by the deployment
+    matchLabels:
+      app: my-app  # Matches pods with the label 'app: my-app' for this deployment
+  template:  # Describes the pod template that will be used to create pods
+    metadata:
+      labels:
+        app: my-app  # The label to be applied to each pod, allowing the deployment to track them
+    spec:
+      containers:  # Defines the containers that should be created within the pods
+        - name: my-container  # The name of the container
+          image: nginx:latest  # Specifies the container image (here using the latest version of the Nginx image)
+          ports:
+            - containerPort: 80  # Exposes port 80 on the container for external access

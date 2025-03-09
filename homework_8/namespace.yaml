@@ -1,0 +1,4 @@
+apiVersion: v1  # Specifies the API version to use for the resource, here we are using version 'v1' for namespaces
+kind: Namespace  # Defines the kind of resource, in this case, a Namespace
+metadata:
+  name: my-namespace  # The name of the namespace being created
