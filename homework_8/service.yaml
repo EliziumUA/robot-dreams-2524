@@ -1,0 +1,12 @@
+apiVersion: v1  # Specifies the API version to use for the resource, here we are using version 'v1' for Services
+kind: Service  # Defines the kind of resource, in this case, a Service
+metadata:
+  name: my-service  # The name of the service being created
+spec:
+  selector:  # Specifies the label selector used to find the pods the service should target
+    app: my-app  # The label selector matches pods with the label 'app: my-app'
+  ports:  # Defines the ports that the service will expose
+    - protocol: TCP  # The protocol used for the service, here it's TCP
+      port: 80  # The port on which the service will be accessible within the cluster
+      targetPort: 80  # The port on the pod that the service will forward traffic to
+  type: ClusterIP  # The type of service; ClusterIP exposes the service within the cluster only
