@@ -10,4 +10,4 @@ spec:
   persistentVolumeReclaimPolicy: Retain  # Retains the volume even after the PVC is deleted
   storageClassName: microk8s-hostpath  # The storage class associated with this PV
   hostPath:
-    path: "/mnt/data/busybox-pv"  # The path on the host machine where data is stored
+    path: "/mnt/data/busybox"  # The path on the host machine where data is stored

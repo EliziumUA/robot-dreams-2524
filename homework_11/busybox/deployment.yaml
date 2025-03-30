@@ -7,11 +7,11 @@ spec:
   replicas: 3  # Specifies the number of replicas (pods) to run
   selector:
     matchLabels:
-      app: busybox-app  # Defines the label selector to match pods for this deployment
+      app: busybox  # Defines the label selector to match pods for this deployment
   template:
     metadata:
       labels:
-        app: busybox-app  # Labels to be applied to the pods created by the deployment
+        app: busybox  # Labels to be applied to the pods created by the deployment
     spec:
       containers:
         - name: busybox  # The name of the container

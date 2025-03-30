@@ -4,6 +4,6 @@ metadata:
   name: busybox-configmap  # The name of the ConfigMap
   namespace: my-busybox  # The namespace where the ConfigMap is created
   labels:
-    app: busybox-app  # A label to associate the ConfigMap with the busybox-app
+    app: busybox  # A label to associate the ConfigMap with the busybox
 data:
   FILE_NAME: "busybox.log"  # Key-value pair representing configuration data (filename for logs)

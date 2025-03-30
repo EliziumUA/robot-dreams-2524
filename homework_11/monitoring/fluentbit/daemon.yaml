@@ -1,4 +1,3 @@
-# DaemonSet for Fluent Bit deployment in the cluster to collect logs from all nodes
 apiVersion: apps/v1  # Specifies the API version for the DaemonSet resource
 kind: DaemonSet  # Defines the resource as a DaemonSet, ensuring one pod per node
 metadata:
