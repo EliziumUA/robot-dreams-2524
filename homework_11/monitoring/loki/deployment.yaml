@@ -1,0 +1,34 @@
+apiVersion: apps/v1  # Specifies the API version for the Deployment resource
+kind: Deployment  # Defines the resource as a Deployment
+metadata:
+  name: loki-deployment  # The name of the Deployment
+  namespace: my-monitoring  # The namespace where the Deployment is created
+spec:
+  replicas: 1  # The number of replicas of the pod to run
+  selector:
+    matchLabels:
+      app: loki  # The label selector to match the pods managed by this deployment
+  template:
+    metadata:
+      labels:
+        app: loki  # The labels applied to the pods created by this deployment
+    spec:
+      containers:
+        - name: loki  # The name of the container inside the pod
+          image: grafana/loki:2.8.2  # The container image used for Loki
+          args:
+            - -config.file=/etc/loki/loki-config.yaml  # Command-line argument to specify the configuration file for Loki
+          ports:
+            - containerPort: 3100  # The port exposed by the Loki container
+          volumeMounts:
+            - name: config  # Mount the config volume to the specified path
+              mountPath: /etc/loki  # The path inside the container where the config volume will be mounted
+            - name: storage  # Mount the storage volume to the specified path
+              mountPath: /var/loki  # The path inside the container where the storage volume will be mounted
+      volumes:
+        - name: config  # Defines the volume for configuration files
+          configMap:
+            name: loki-configmap  # The ConfigMap providing configuration files
+        - name: storage  # Defines the volume for persistent storage
+          persistentVolumeClaim:
+            claimName: loki-pvc  # The PersistentVolumeClaim to be used for persistent storage

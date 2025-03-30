@@ -1,0 +1,20 @@
+apiVersion: apps/v1  # Specifies the API version for the Deployment resource
+kind: Deployment  # Defines the resource as a Deployment
+metadata:
+  name: grafana-deployment  # The name of the Deployment
+  namespace: my-monitoring  # The namespace where the Deployment is created
+spec:
+  replicas: 1  # The number of replica pods for Grafana. In this case, only 1 pod will be created.
+  selector:
+    matchLabels:
+      app: grafana  # The label selector to identify which pods belong to this Deployment
+  template:
+    metadata:
+      labels:
+        app: grafana  # The labels applied to the pods created by the Deployment
+    spec:
+      containers:
+        - name: grafana  # The name of the container inside the pod
+          image: grafana/grafana  # The Grafana container image to use
+          ports:
+            - containerPort: 3000  # The port that the container exposes, Grafana's default web UI port

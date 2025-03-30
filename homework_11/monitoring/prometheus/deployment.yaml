@@ -1,0 +1,29 @@
+apiVersion: apps/v1  # Specifies the API version for the Deployment resource
+kind: Deployment  # Defines the resource as a Deployment
+metadata:
+  name: prometheus-deployment  # The name of the Deployment
+  namespace: my-monitoring  # The namespace where the Deployment is created
+spec:
+  replicas: 1  # The number of replicas of the pod to run
+  selector:
+    matchLabels:
+      app: prometheus  # The label selector to match the pods managed by this deployment
+  template:
+    metadata:
+      labels:
+        app: prometheus  # The labels applied to the pods created by this deployment
+    spec:
+      containers:
+        - name: prometheus  # The name of the container inside the pod
+          image: prom/prometheus  # The container image used for Prometheus
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"  # Command-line argument to specify the configuration file for Prometheus
+          ports:
+            - containerPort: 9090  # The port exposed by the Prometheus container
+          volumeMounts:
+            - name: config-volume  # Mount the config-volume to the specified path
+              mountPath: /etc/prometheus/  # The path inside the container where the config volume will be mounted
+      volumes:
+        - name: config-volume  # Defines the volume for configuration files
+          configMap:
+            name: prometheus-configmap  # The ConfigMap providing configuration files for Prometheus

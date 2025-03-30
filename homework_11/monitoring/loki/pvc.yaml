@@ -1,0 +1,12 @@
+apiVersion: v1  # Specifies the API version for the PersistentVolumeClaim (PVC) resource
+kind: PersistentVolumeClaim  # Defines the resource as a PersistentVolumeClaim (PVC)
+metadata:
+  name: loki-pvc  # The name of the PersistentVolumeClaim
+  namespace: my-monitoring  # The namespace where the PVC is created
+spec:
+  accessModes:
+    - ReadWriteOnce  # The access mode for the PVC (can be mounted as read-write by a single node)
+  resources:
+    requests:
+      storage: 200Mi  # The amount of storage requested (200 MiB)
+  storageClassName: microk8s-hostpath  # The storage class that the PVC belongs to (used for dynamic provisioning)

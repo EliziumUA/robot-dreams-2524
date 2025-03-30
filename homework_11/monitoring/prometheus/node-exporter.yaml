@@ -1,0 +1,62 @@
+# DaemonSet to deploy Node Exporter on all nodes in the cluster
+apiVersion: apps/v1  # Specifies the API version for the DaemonSet resource
+kind: DaemonSet  # Defines the resource as a DaemonSet
+metadata:
+  name: node-exporter  # The name of the DaemonSet
+  namespace: my-monitoring  # The namespace where the DaemonSet is created
+  labels:
+    app: node-exporter  # The label for identifying the DaemonSet
+spec:
+  selector:
+    matchLabels:
+      app: node-exporter  # The label selector to match the pods managed by this DaemonSet
+  template:
+    metadata:
+      labels:
+        app: node-exporter  # The labels applied to the pods created by the DaemonSet
+    spec:
+      hostPID: true  # Enables the container to access the host's PID namespace, required for gathering system metrics
+      hostNetwork: true  # Uses the host's network namespace, allowing Node Exporter to access node metrics
+      containers:
+        - name: node-exporter  # The name of the container inside the pod
+          image: quay.io/prometheus/node-exporter:v1.7.0  # The container image used for Node Exporter
+          ports:
+            - name: metrics  # The port exposed by the Node Exporter container
+              containerPort: 9100  # The container port where Node Exporter exposes metrics
+          volumeMounts:
+            - name: proc  # Mounts the host's /proc directory to the container
+              mountPath: /host/proc  # The path inside the container where /proc will be mounted
+              readOnly: true  # Mounts the directory as read-only
+            - name: sys  # Mounts the host's /sys directory to the container
+              mountPath: /host/sys  # The path inside the container where /sys will be mounted
+              readOnly: true  # Mounts the directory as read-only
+            - name: root  # Mounts the host's root filesystem to the container
+              mountPath: /rootfs  # The path inside the container where the root filesystem will be mounted
+              readOnly: true  # Mounts the directory as read-only
+          args:
+            - '--path.procfs=/host/proc'  # Specifies the path to the host's /proc directory for Node Exporter
+            - '--path.sysfs=/host/sys'  # Specifies the path to the host's /sys directory for Node Exporter
+            - '--path.rootfs=/rootfs'  # Specifies the path to the host's root filesystem for Node Exporter
+      volumes:
+        - name: proc  # Defines the volume for the /proc directory
+          hostPath:
+            path: /proc  # The path to the host's /proc directory
+        - name: sys  # Defines the volume for the /sys directory
+          hostPath:
+            path: /sys  # The path to the host's /sys directory
+        - name: root  # Defines the volume for the host's root filesystem
+          hostPath:
+            path: /  # The path to the host's root filesystem
+
+---
+# Service to expose Node Exporter metrics
+apiVersion: v1  # Specifies the API version for the Service resource
+kind: Service  # Defines the resource as a Service
+metadata:
+  name: node-exporter-service  # The name of the Service
+  namespace: my-monitoring  # The namespace where the Service is created
+  labels:
+    app: node-exporter  # The label for identifying the Service
+spec:
+  selector:
+    app: node-exporter  # The label

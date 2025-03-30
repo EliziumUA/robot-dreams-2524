@@ -1,0 +1,40 @@
+apiVersion: apps/v1  # Specifies the API version for the Deployment resource
+kind: Deployment  # Defines the resource as a Deployment
+metadata:
+  name: busybox-deployment  # The name of the deployment
+  namespace: my-busybox  # The namespace where the deployment is created
+spec:
+  replicas: 3  # Specifies the number of replicas (pods) to run
+  selector:
+    matchLabels:
+      app: busybox-app  # Defines the label selector to match pods for this deployment
+  template:
+    metadata:
+      labels:
+        app: busybox-app  # Labels to be applied to the pods created by the deployment
+    spec:
+      containers:
+        - name: busybox  # The name of the container
+          image: busybox  # The container image to use
+          command: ["sh"]  # The command to run inside the container (using shell)
+          args: ["-c", "while true; do echo \"$(hostname -i) $(hostname) - $(date)\" | tee -a /var/logs/$(FILE_NAME); sleep 30; done"]  # The shell command to continuously log hostname and date
+          resources:
+            requests:
+              cpu: 100m  # Minimum amount of CPU requested
+              memory: 128Mi  # Minimum amount of memory requested
+            limits:
+              cpu: 200m  # Maximum amount of CPU allowed
+              memory: 256Mi  # Maximum amount of memory allowed
+          env:
+            - name: FILE_NAME  # The environment variable name for the log file name
+              valueFrom:
+                configMapKeyRef:
+                  name: busybox-configmap  # Reference to the ConfigMap that holds the FILE_NAME value
+                  key: FILE_NAME  # The specific key in the ConfigMap to use
+          volumeMounts:
+            - name: busybox-volume  # The volume to mount into the container
+              mountPath: /var/logs  # Path inside the container where the volume will be mounted
+      volumes:
+        - name: busybox-volume  # The name of the volume to be used by the pods
+          persistentVolumeClaim:
+            claimName: busybox-pvc  # The PersistentVolumeClaim to use for the volume

@@ -1,0 +1,30 @@
+# DaemonSet for Fluent Bit deployment in the cluster to collect logs from all nodes
+apiVersion: apps/v1  # Specifies the API version for the DaemonSet resource
+kind: DaemonSet  # Defines the resource as a DaemonSet, ensuring one pod per node
+metadata:
+  name: fluentbit  # The name of the DaemonSet
+  namespace: my-monitoring  # The namespace where the DaemonSet is deployed
+spec:
+  selector:
+    matchLabels:
+      app: fluentbit  # Selects the pods that belong to this DaemonSet based on the app label
+  template:
+    metadata:
+      labels:
+        app: fluentbit  # The label for identifying the pods created by this DaemonSet
+    spec:
+      containers:
+        - name: fluentbit  # The name of the container inside the pod
+          image: fluent/fluent-bit:latest  # The Fluent Bit container image, set to the latest version
+          volumeMounts:
+            - name: varlog  # Mounts the host log directory into the container
+              mountPath: /mnt/data/busybox-pv/  # The path inside the container where the logs are mounted
+            - name: config  # Mounts the Fluent Bit configuration directory
+              mountPath: /fluent-bit/etc/  # The path inside the container where the configuration will be mounted
+      volumes:
+        - name: varlog  # Defines the volume for the logs
+          hostPath:
+            path: /mnt/data/busybox-pv/  # The host directory where logs are stored
+        - name: config  # Defines the volume for Fluent Bit's configuration files
+          configMap:
+            name: fluentbit-configmap  # Refers to the ConfigMap containing the Fluent Bit configuration

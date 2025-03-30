@@ -1,0 +1,12 @@
+apiVersion: v1  # Specifies the Kubernetes API version
+kind: Service  # Defines the resource as a Service
+metadata:
+  name: prometheus-service  # The name of the service, used for internal access within the cluster
+  namespace: my-monitoring  # Specifies the namespace where the service is created
+spec:
+  selector:
+    app: prometheus  # Selects pods with the label app=prometheus to route traffic to
+  ports:
+    - protocol: TCP  # The protocol used by the service (TCP)
+      port: 9090  # The port on which the service is exposed inside the cluster
+      targetPort: 9090  # The port on the selected pods to which traffic is forwarded

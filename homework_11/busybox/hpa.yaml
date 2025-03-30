@@ -1,0 +1,19 @@
+apiVersion: autoscaling/v2  # Specifies the API version for the Horizontal Pod Autoscaler (HPA)
+kind: HorizontalPodAutoscaler  # Defines the resource as a HorizontalPodAutoscaler (HPA)
+metadata:
+  name: busybox-hpa  # The name of the HPA
+  namespace: my-busybox  # The namespace where the HPA is created
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1  # API version for the target resource (Deployment)
+    kind: Deployment  # The type of the resource being scaled (Deployment)
+    name: busybox-deployment  # The name of the Deployment to be scaled
+  minReplicas: 3  # The minimum number of replicas for the Deployment
+  maxReplicas: 6  # The maximum number of replicas for the Deployment
+  metrics:
+    - type: Resource  # Specifies the metric type as Resource (e.g., CPU or Memory usage)
+      resource:
+        name: cpu  # The resource being measured (CPU usage)
+        target:
+          type: Utilization  # The type of target (based on utilization percentage)
+          averageUtilization: 80  # The target average CPU utilization percentage (80%)
