@@ -131,5 +131,12 @@ microk8s.kubectl apply -f monitoring/prometheus/service.yaml
 microk8s.kubectl apply -f monitoring/prometheus/node-exporter.yaml
 microk8s.kubectl apply -f monitoring/prometheus/kube-state-metrics.yaml
 
-#### Check all
+#### Check all entity
 microk8s.kubectl get all --all-namespaces
+
+#### Check grafana
+http://78.27.236.215:32245/
+
+#### Data source
+http://loki:3100
+http://prometheus:9090
