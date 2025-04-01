@@ -77,6 +77,22 @@ microk8s.kubectl scale deployment busybox-deployment --replicas=5 -n busybox-nam
 microk8s.kubectl get deployments -n busybox-namespace
 microk8s.kubectl get hpa busybox-hpa -n busybox-namespace
 
+#### Check logs
+tail /mnt/data/container.log
+
+```code 
+busybox-deployment-7794f595db-lhqrq Tue Apr 1 21:41:18 UTC 2025
+busybox-deployment-7794f595db-phdqf Tue Apr 1 21:41:18 UTC 2025
+busybox-deployment-7794f595db-5xxbv Tue Apr 1 21:41:18 UTC 2025
+busybox-deployment-7794f595db-44jsh Tue Apr 1 21:41:19 UTC 2025
+busybox-deployment-7794f595db-tcq4v Tue Apr 1 21:41:19 UTC 2025
+busybox-deployment-7794f595db-lhqrq Tue Apr 1 21:41:23 UTC 2025
+busybox-deployment-7794f595db-phdqf Tue Apr 1 21:41:23 UTC 2025
+busybox-deployment-7794f595db-5xxbv Tue Apr 1 21:41:23 UTC 2025
+busybox-deployment-7794f595db-44jsh Tue Apr 1 21:41:24 UTC 2025
+busybox-deployment-7794f595db-tcq4v Tue Apr 1 21:41:24 UTC 2025
+```
+
 ## Monitoring
 #### Create namespace
 microk8s.kubectl apply -f monitoring/namespace.yaml
@@ -112,5 +128,8 @@ microk8s.kubectl apply -f monitoring/grafana/service.yaml
 #### Create Kube State Metrics
 microk8s.kubectl apply -f monitoring/prometheus/deployment.yaml
 microk8s.kubectl apply -f monitoring/prometheus/service.yaml
-microk8s.kubectl apply -f monitoring/node-exporter.yaml
-microk8s.kubectl apply -f monitoring/kube-state-metrics.yaml
+microk8s.kubectl apply -f monitoring/prometheus/node-exporter.yaml
+microk8s.kubectl apply -f monitoring/prometheus/kube-state-metrics.yaml
+
+#### Check all
+microk8s.kubectl get all --all-namespaces
