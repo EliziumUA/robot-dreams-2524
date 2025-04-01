@@ -1,29 +1,29 @@
-apiVersion: apps/v1  # Specifies the API version for the DaemonSet resource
-kind: DaemonSet  # Defines the resource as a DaemonSet, ensuring one pod per node
-metadata:
-  name: fluentbit  # The name of the DaemonSet
-  namespace: my-monitoring  # The namespace where the DaemonSet is deployed
-spec:
-  selector:
-    matchLabels:
-      app: fluentbit  # Selects the pods that belong to this DaemonSet based on the app label
-  template:
-    metadata:
-      labels:
-        app: fluentbit  # The label for identifying the pods created by this DaemonSet
-    spec:
-      containers:
-        - name: fluentbit  # The name of the container inside the pod
-          image: fluent/fluent-bit:latest  # The Fluent Bit container image, set to the latest version
-          volumeMounts:
-            - name: varlog  # Mounts the host log directory into the container
-              mountPath: /mnt/data/busybox-pv/  # The path inside the container where the logs are mounted
-            - name: config  # Mounts the Fluent Bit configuration directory
-              mountPath: /fluent-bit/etc/  # The path inside the container where the configuration will be mounted
-      volumes:
-        - name: varlog  # Defines the volume for the logs
-          hostPath:
-            path: /mnt/data/busybox-pv/  # The host directory where logs are stored
-        - name: config  # Defines the volume for Fluent Bit's configuration files
-          configMap:
-            name: fluentbit-configmap  # Refers to the ConfigMap containing the Fluent Bit configuration
+apiVersion: apps/v1  # Specifies the API version used for the DaemonSet resource
+kind: DaemonSet  # The type of resource, which in this case is DaemonSet for running a copy of a Pod on each node
+metadata:  # Metadata about the DaemonSet
+  name: fluentbit  # The name of the DaemonSet being created
+  namespace: monitoring-namespace  # The namespace where this DaemonSet will be created
+spec:  # Specifications for the DaemonSet
+  selector:  # Defines how the DaemonSet finds which Pods to manage
+    matchLabels:  # The DaemonSet will manage Pods with this label
+      app: fluentbit  # Label selector to match Pods with the label 'app: fluentbit'
+  template:  # Template for the Pods created by this DaemonSet
+    metadata:  # Metadata about the Pod
+      labels:  # Labels assigned to the Pod
+        app: fluentbit  # The label 'app: fluentbit' is applied to the Pod
+    spec:  # Specifications for the Pod
+      containers:  # List of containers within the Pod
+        - name: fluentbit  # The name of the container
+          image: fluent/fluent-bit:latest  # The Docker image for the Fluent Bit container
+          volumeMounts:  # Mounts volumes into the container's filesystem
+            - name: varlog  # The volume 'varlog' will be mounted
+              mountPath: /var/log  # Mounts the varlog volume at /var/log inside the container
+            - name: config  # The volume 'config' will be mounted
+              mountPath: /fluent-bit/etc/  # Mounts the config volume at /fluent-bit/etc/ inside the container
+      volumes:  # List of volumes available to the Pod
+        - name: varlog  # Volume named 'varlog' for accessing the host's /var/log directory
+          hostPath:  # The source of the varlog volume is a hostPath
+            path: /var/log  # Specifies the path on the host machine to be mounted into the Pod
+        - name: config  # Volume named 'config' for the Fluent Bit configuration
+          configMap:  # The source of the config volume is a ConfigMap
+            name: fluentbit-config  # The ConfigMap named 'fluentbit-config' is used for the configuration

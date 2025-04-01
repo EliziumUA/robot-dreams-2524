@@ -1,8 +1,8 @@
-apiVersion: v1  # Specifies the API version for the ConfigMap resource
-kind: ConfigMap  # Defines the resource as a ConfigMap, used to store non-confidential configuration data
-metadata:
-  name: fluentbit-configmap  # The name of the ConfigMap, which can be referenced by other resources
-  namespace: my-monitoring  # The namespace where the ConfigMap is stored
+apiVersion: v1  # Specifies the API version used for the ConfigMap resource
+kind: ConfigMap  # The type of resource, which in this case is ConfigMap for storing configuration data
+metadata:  # Metadata about the ConfigMap
+  name: fluentbit-config  # The name of the ConfigMap being created
+  namespace: monitoring-namespace  # The namespace where this ConfigMap will be created
 data:
   fluent-bit.conf: |
     [SERVICE]
@@ -10,13 +10,13 @@ data:
         Log_Level    info
     [INPUT]
         Name              tail
-        Path              /mnt/data/busybox-pv/busybox.log
+        Path              /var/log/containers/*.log
         Parser            docker
         Tag               kube.*
         Refresh_Interval  5
     [OUTPUT]
         Name        loki
         Match       *
-        Host        loki-service
+        Host        loki
         Port        3100
-        Labels      job=busybox-logs
+        Labels      job=my-logs

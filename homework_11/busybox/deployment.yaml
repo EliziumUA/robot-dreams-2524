@@ -1,40 +1,36 @@
-apiVersion: apps/v1  # Specifies the API version for the Deployment resource
-kind: Deployment  # Defines the resource as a Deployment
-metadata:
-  name: busybox-deployment  # The name of the deployment
-  namespace: my-busybox  # The namespace where the deployment is created
-spec:
-  replicas: 3  # Specifies the number of replicas (pods) to run
-  selector:
+apiVersion: apps/v1  # Specifies the API version for the resource (Deployment in this case)
+kind: Deployment  # Defines the type of resource, which is a Deployment
+metadata:  # Contains metadata about the Deployment
+  name: busybox-deployment  # The name of the Deployment
+  namespace: busybox-namespace  # The namespace in which the Deployment is created
+spec:  # Specifies the desired state of the Deployment
+  replicas: 3  # Defines the number of pod replicas to be created (3 in this case)
+  selector:  # Defines the label selector to match the pods managed by this Deployment
     matchLabels:
-      app: busybox  # Defines the label selector to match pods for this deployment
-  template:
+      app: busybox-app  # The label that the Deployment will match to select pods
+  template:  # The pod template, describing the pods to be created
     metadata:
-      labels:
-        app: busybox  # Labels to be applied to the pods created by the deployment
-    spec:
-      containers:
-        - name: busybox  # The name of the container
-          image: busybox  # The container image to use
-          command: ["sh"]  # The command to run inside the container (using shell)
-          args: ["-c", "while true; do echo \"$(hostname -i) $(hostname) - $(date)\" | tee -a /var/logs/$(FILE_NAME); sleep 30; done"]  # The shell command to continuously log hostname and date
-          resources:
-            requests:
-              cpu: 100m  # Minimum amount of CPU requested
-              memory: 128Mi  # Minimum amount of memory requested
-            limits:
-              cpu: 200m  # Maximum amount of CPU allowed
-              memory: 256Mi  # Maximum amount of memory allowed
-          env:
-            - name: FILE_NAME  # The environment variable name for the log file name
-              valueFrom:
+      annotations:  # Annotations are key-value pairs that can be used by monitoring systems
+        prometheus.io/scrape: "true"  # Tells Prometheus to scrape metrics from this pod
+        prometheus.io/port: "80"  # Specifies the port for Prometheus to scrape metrics
+        prometheus.io/path: "/metrics"  # Specifies the path for Prometheus to scrape metrics
+      labels:  # Labels applied to the pod for selection by other resources
+        app: busybox-app  # The label for the pod
+    spec:  # Specifies the pod specification
+      containers:  # List of containers in the pod
+        - name: busybox-app  # Name of the container
+          image: busybox:latest  # The image to be used for the container
+          command: ["/bin/sh", "-c", "while true; do echo $(hostname) $(date) | tee -a /data/$LOG_FILENAME; sleep 5; done"]  # The command that runs in the container to log the hostname and date every 5 seconds
+          env:  # Environment variables to be used by the container
+            - name: LOG_FILENAME  # Environment variable to store the log filename
+              valueFrom:  # The value of the environment variable is sourced from a ConfigMap
                 configMapKeyRef:
-                  name: busybox-configmap  # Reference to the ConfigMap that holds the FILE_NAME value
-                  key: FILE_NAME  # The specific key in the ConfigMap to use
-          volumeMounts:
-            - name: busybox-volume  # The volume to mount into the container
-              mountPath: /var/logs  # Path inside the container where the volume will be mounted
-      volumes:
-        - name: busybox-volume  # The name of the volume to be used by the pods
-          persistentVolumeClaim:
-            claimName: busybox-pvc  # The PersistentVolumeClaim to use for the volume
+                  name: busybox-configmap  # The ConfigMap to fetch the value from
+                  key: log_filename  # The key within the ConfigMap whose value is used
+          volumeMounts:  # Defines volumes to be mounted inside the container
+            - name: data-volume  # The name of the volume to mount
+              mountPath: /data  # The path in the container where the volume is mounted
+      volumes:  # List of volumes available to the pod
+        - name: data-volume  # The name of the volume
+          persistentVolumeClaim:  # The PersistentVolumeClaim that provides the storage
+            claimName: busybox-pvc  # The name of the PersistentVolumeClaim to be used

@@ -1,0 +1,104 @@
+apiVersion: v1  # Specifies the API version used for the ServiceAccount resource
+kind: ServiceAccount  # The type of resource, which in this case is ServiceAccount for managing access to Kubernetes API
+metadata:  # Metadata about the ServiceAccount
+  name: kube-state-metrics  # The name of the ServiceAccount being created
+  namespace: monitoring-namespace  # The namespace where this ServiceAccount will be created
+
+---
+apiVersion: rbac.authorization.k8s.io/v1  # Specifies the API version used for the ClusterRole resource
+kind: ClusterRole  # The type of resource, which in this case is ClusterRole for defining a set of permissions
+metadata:  # Metadata about the ClusterRole
+  name: kube-state-metrics  # The name of the ClusterRole being created
+rules:  # Defines the set of permissions granted by this ClusterRole
+  - apiGroups: [""]  # This rule applies to the core API group (empty string indicates the core group)
+    resources:  # The resources the rule applies to
+      - pods  # Pods in the core API group
+      - nodes  # Nodes in the core API group
+      - namespaces  # Namespaces in the core API group
+      - persistentvolumeclaims  # PersistentVolumeClaims in the core API group
+      - persistentvolumes  # PersistentVolumes in the core API group
+      - services  # Services in the core API group
+    verbs: ["list", "watch"]  # The actions allowed on the above resources (list and watch)
+
+  - apiGroups: ["apps"]  # This rule applies to the 'apps' API group
+    resources:  # The resources the rule applies to in the 'apps' API group
+      - deployments  # Deployments in the 'apps' API group
+      - daemonsets  # DaemonSets in the 'apps' API group
+      - replicasets  # ReplicaSets in the 'apps' API group
+      - statefulsets  # StatefulSets in the 'apps' API group
+    verbs: ["list", "watch"]  # The actions allowed on the above resources (list and watch)
+
+  - apiGroups: ["batch"]  # This rule applies to the 'batch' API group
+    resources:  # The resources the rule applies to in the 'batch' API group
+      - jobs  # Jobs in the 'batch' API group
+      - cronjobs  # CronJobs in the 'batch' API group
+    verbs: ["list", "watch"]  # The actions allowed on the above resources (list and watch)
+
+---
+apiVersion: rbac.authorization.k8s.io/v1  # Specifies the API version used for the ClusterRoleBinding resource
+kind: ClusterRoleBinding  # The type of resource, which in this case is ClusterRoleBinding for associating a role with a subject
+metadata:  # Metadata about the ClusterRoleBinding
+  name: kube-state-metrics  # The name of the ClusterRoleBinding being created
+roleRef:  # References the ClusterRole to bind to the subject
+  apiGroup: rbac.authorization.k8s.io  # The API group for RBAC resources
+  kind: ClusterRole  # The kind of role being referenced (ClusterRole in this case)
+  name: kube-state-metrics  # The name of the ClusterRole being referenced
+subjects:  # The entities (subjects) that the role is being bound to
+  - kind: ServiceAccount  # The kind of subject being referenced (a ServiceAccount)
+    name: kube-state-metrics  # The name of the ServiceAccount
+    namespace: monitoring-namespace  # The namespace where the ServiceAccount exists
+
+---
+apiVersion: apps/v1  # Specifies the API version used for the Deployment resource
+kind: Deployment  # The type of resource, which in this case is Deployment for managing a set of replica Pods
+metadata:  # Metadata about the Deployment
+  name: kube-state-metrics  # The name of the Deployment being created
+  namespace: monitoring-namespace  # The namespace where this Deployment will be created
+spec:  # Specifications for the Deployment
+  replicas: 1  # Specifies the number of replicas (Pods) to be created; here it’s 1
+  selector:  # Defines how the Deployment finds which Pods to manage
+    matchLabels:  # The Deployment will manage Pods with this label
+      app: kube-state-metrics  # Label selector to match Pods with the label 'app: kube-state-metrics'
+  template:  # Template for the Pods created by this Deployment
+    metadata:  # Metadata about the Pod
+      labels:  # Labels assigned to the Pod
+        app: kube-state-metrics  # The label 'app: kube-state-metrics' is applied to the Pod
+    spec:  # Specifications for the Pod
+      serviceAccountName: kube-state-metrics  # The ServiceAccount to be used by the Pod (which grants the required permissions)
+      containers:  # List of containers within the Pod
+        - name: kube-state-metrics  # The name of the container
+          image: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.10.1  # The Docker image for the kube-state-metrics container
+          ports:  # List of ports exposed by the container
+            - name: http  # The name for the port (for identification)
+              containerPort: 8080  # Exposes port 8080 for the kube-state-metrics HTTP endpoint
+
+---
+apiVersion: v1  # Specifies the API version used for the Service resource
+kind: Service  # The type of resource, which in this case is Service for exposing network access to a set of Pods
+metadata:  # Metadata about the Service
+  name: kube-state-metrics  # The name of the Service being created
+  namespace: monitoring-namespace  # The namespace where this Service will be created
+  labels:  # Labels assigned to the Service
+    app: kube-state-metrics  # The label 'app: kube-state-metrics' is applied to the Service
+spec:  # Specifications for the Service
+  selector:  # Defines how the Service selects which Pods to route traffic to
+    app: kube-state-metrics  # The Service will route traffic to Pods with the label 'app: kube-state-metrics'
+  ports:  # Specifies the ports exposed by the Service
+    - name: http  # The name for the port (for identification)
+      port: 8080  # The port on which the Service will be exposed
+      targetPort: http  # The port on the Pods to which traffic is forwarded (should match the container's exposed port)
+
+---
+apiVersion: v1  # Specifies the API version used for the ConfigMap resource
+kind: ConfigMap  # The type of resource, which in this case is ConfigMap for storing configuration data
+metadata:  # Metadata about the ConfigMap
+  name: prometheus-config  # The name of the ConfigMap being created
+  namespace: monitoring-namespace  # The namespace where this ConfigMap will be created
+data:  # The actual data contained within the ConfigMap
+  prometheus.yml: |  # Prometheus configuration file (prometheus.yml)
+    global:
+      scrape_interval: 15s  # Sets the global scrape interval for Prometheus to 15 seconds
+    scrape_configs:  # Defines the scrape configurations for Prometheus to scrape metrics
+      - job_name: 'kube-state-metrics'  # The name of the scrape job
+        static_configs:
+          - targets: ['kube-state-metrics.monitoring-namespace.svc.cluster.local:8080']  # The target to scrape, i.e., the kube-state-metrics Service in the monitoring-namespace

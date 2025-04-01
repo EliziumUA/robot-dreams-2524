@@ -1,20 +1,20 @@
-apiVersion: apps/v1  # Specifies the API version for the Deployment resource
-kind: Deployment  # Defines the resource as a Deployment
-metadata:
-  name: grafana-deployment  # The name of the Deployment
-  namespace: my-monitoring  # The namespace where the Deployment is created
-spec:
-  replicas: 1  # The number of replica pods for Grafana. In this case, only 1 pod will be created.
-  selector:
-    matchLabels:
-      app: grafana  # The label selector to identify which pods belong to this Deployment
-  template:
-    metadata:
-      labels:
-        app: grafana  # The labels applied to the pods created by the Deployment
-    spec:
-      containers:
-        - name: grafana  # The name of the container inside the pod
-          image: grafana/grafana  # The Grafana container image to use
-          ports:
-            - containerPort: 3000  # The port that the container exposes, Grafana's default web UI port
+apiVersion: apps/v1  # Specifies the API version used for the Deployment resource
+kind: Deployment  # The type of resource, which in this case is Deployment for managing a set of replica Pods
+metadata:  # Metadata about the Deployment
+  name: grafana  # The name of the Deployment being created
+  namespace: monitoring-namespace  # The namespace where this Deployment will be created
+spec:  # Specifications for the Deployment
+  replicas: 1  # Specifies the number of replicas (Pods) to be created; here it’s 1
+  selector:  # Defines how the Deployment finds which Pods to manage
+    matchLabels:  # The Deployment will manage Pods with this label
+      app: grafana  # Label selector to match Pods with the label 'app: grafana'
+  template:  # Template for the Pods created by this Deployment
+    metadata:  # Metadata about the Pod
+      labels:  # Labels assigned to the Pod
+        app: grafana  # The label 'app: grafana' is applied to the Pod
+    spec:  # Specifications for the Pod
+      containers:  # List of containers within the Pod
+        - name: grafana  # The name of the container
+          image: grafana/grafana  # The Docker image for the Grafana container
+          ports:  # List of ports exposed by the container
+            - containerPort: 3000  # Exposes port 3000 for the Grafana service
