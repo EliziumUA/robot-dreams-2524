@@ -1,0 +1,28 @@
+alertmanager:
+  enabled: false
+
+grafana:
+  enabled: false
+
+nodeExporter:
+  enabled: true
+
+kubeStateMetrics:
+  enabled: true
+
+server:
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: true
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /
+    hosts:
+      - prometheus.local
+    tls:
+      - hosts:
+          - prometheus.local
+        secretName: prometheus-tls-secret
+  persistentVolume:
+    enabled: true
+    size: 5Gi

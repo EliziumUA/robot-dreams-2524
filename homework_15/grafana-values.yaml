@@ -1,0 +1,20 @@
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - grafana.edu.local
+  tls:
+    - hosts:
+        - grafana.local
+      secretName: grafana-tls-secret
+
+adminUser: admin
+adminPassword: admin123
+
+persistence:
+  enabled: true
+  size: 5Gi
+
+service:
+  type: ClusterIP

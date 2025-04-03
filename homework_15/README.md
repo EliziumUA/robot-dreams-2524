@@ -70,3 +70,58 @@ helm install wp ./my-wordpress/ --kubeconfig ~/.kube/config -n wordpress --creat
 microk8s.kubectl get all -n wordpress
 microk8s.kubectl describe ingress -n wordpress
 microk8s.kubectl get pvc -n wordpress
+
+# 1. Видалення ресурсу Ingress
+microk8s.kubectl delete ingress wordpress-ingress -n wordpress
+# 2. Видалення сервісів
+microk8s.kubectl delete svc wordpress -n wordpress
+# 3. Видалення деплойментів
+microk8s.kubectl delete deployment wordpress -n wordpress
+# 4. Видалення PVC та PV (за потреби)
+microk8s.kubectl delete pvc wp-pvc -n wordpress
+# 5. Видалення секретів (якщо створювали окремо)
+microk8s.kubectl delete secret mysql-secret -n wordpress
+# 6. Видалення HPA (якщо створювали)
+microk8s.kubectl delete hpa wordpress-hpa -n wordpress
+
+
+microk8s.kubectl create namespace monitoring
+
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+
+helm show values grafana/grafana > grafana-default-values.yaml
+
+nano clusterissuer.yaml
+microk8s.kubectl apply -f clusterissuer.yaml
+
+nano grafana-cert.yaml
+microk8s.kubectl apply -f grafana-cert.yaml
+
+nano grafana-values.yaml
+helm install grafana grafana/grafana \
+--namespace monitoring \
+--values grafana-values.yaml
+
+microk8s.kubectl get all -n monitoring
+microk8s.kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+helm show values prometheus-community/prometheus > prometheus-default-values.yaml
+
+
+
+
+
+
+nano prometheus-cert.yaml
+microk8s.kubectl apply -f prometheus-cert.yaml
+
+nano prometheus-values.yaml
+helm install prometheus prometheus-community/prometheus \
+--namespace monitoring \
+--values prometheus-values.yaml
+
+microk8s.kubectl get all -n monitoring
