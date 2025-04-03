@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1  # Specifies the API version for cert-manager
+kind: Certificate  # Defines the resource type as a Certificate
+metadata:  # Metadata section for the resource
+  name: wp-tls-cert  # Name of the certificate
+  namespace: wordpress  # The namespace in which this certificate is created
+spec:  # Specification section for the certificate
+  secretName: tls-secret  # The name of the secret where the certificate will be stored
+  issuerRef:  # Reference to the issuer that will generate the certificate
+    name: wp-cluster-issuer  # The name of the issuer
+    kind: ClusterIssuer  # Specifies that the issuer is a ClusterIssuer, a cluster-wide resource
+  commonName: wp.local  # Common Name for the certificate (usually the domain name)
+  dnsNames:  # List of DNS names to be included in the certificate
+    - wp.local  # The DNS name associated with the certificate
+  duration: 8760h  # Duration for which the certificate is valid (8760 hours = 1 year)
+  renewBefore: 360h  # Time before expiration to trigger renewal (360 hours = 15 days)
