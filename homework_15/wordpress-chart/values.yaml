@@ -1,0 +1,24 @@
+wordpress:  # Configuration section for the WordPress application
+  replicaCount: 1  # The number of replicas (pods) to run for WordPress
+  image:  # Docker image configuration for WordPress
+    repository: wordpress  # The repository for the WordPress image
+    tag: latest  # The tag (version) of the WordPress image to use
+  ingress:  # Configuration for Ingress resource
+    enabled: true  # Enables Ingress for routing traffic to WordPress
+    hostname: wp.local  # The hostname for accessing WordPress
+    tls: true  # Enables TLS for secure communication
+    tlsSecret: tls-secret  # The name of the TLS secret used for the certificate
+  persistence:  # Configuration for persistent storage
+    enabled: true  # Enables persistence for WordPress data
+    size: 5Gi  # The size of the persistent volume for WordPress (5 GiB)
+  hpa:  # Horizontal Pod Autoscaler configuration for WordPress
+    minReplicas: 1  # Minimum number of replicas (pods) to scale down to
+    maxReplicas: 5  # Maximum number of replicas (pods) to scale up to
+
+mysql:  # Configuration section for the MySQL database
+  auth:  # Authentication settings for MySQL
+    rootPassword: rootpass  # The root password for MySQL
+    database: wpdb  # The name of the database to create for WordPress
+  primary:  # Configuration for the primary MySQL instance
+    persistence:  # Configuration for MySQL's persistent storage
+      size: 5Gi  # The size of the persistent volume for MySQL (5 GiB)

@@ -1,0 +1,24 @@
+{{- if .Values.wordpress.ingress.enabled }}  # Conditional statement: only creates Ingress if enabled in values
+apiVersion: networking.k8s.io/v1  # Specifies the API version for networking resources
+kind: Ingress  # Defines the resource type as an Ingress
+metadata:  # Metadata section for the Ingress
+  name: {{ .Release.Name }}-wordpress-ingress  # The name of the Ingress, dynamically set based on the release name
+  annotations:  # Annotations for the Ingress
+    nginx.ingress.kubernetes.io/rewrite-target: /  # Ensures the requests are properly routed to the backend service
+spec:  # Specification section for the Ingress
+  tls:  # TLS settings for securing the Ingress
+    - hosts:  # List of hostnames to secure with TLS
+        - {{ .Values.wordpress.ingress.hostname }}  # The hostname for the WordPress application, set from values
+      secretName: {{ .Values.wordpress.ingress.tlsSecret }}  # The name of the TLS secret containing the SSL certificate
+  rules:  # List of routing rules for incoming traffic
+    - host: {{ .Values.wordpress.ingress.hostname }}  # The host to match for this rule
+      http:  # Defines HTTP-based routing
+        paths:  # List of paths to match for this rule
+          - path: /  # The path that this rule applies to
+            pathType: Prefix  # Specifies that the path is a prefix match
+            backend:  # Defines the backend service for handling matched requests
+              service:
+                name: {{ .Release.Name }}-wordpress  # The name of the service (dynamically set based on release name)
+                port:
+                  number: 80  # The port on which the WordPress service is exposed
+  {{- end }}  # End of the conditional block

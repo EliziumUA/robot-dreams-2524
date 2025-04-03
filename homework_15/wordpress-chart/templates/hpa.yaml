@@ -1,0 +1,18 @@
+apiVersion: autoscaling/v2  # Specifies the API version for the HorizontalPodAutoscaler
+kind: HorizontalPodAutoscaler  # Defines the resource type as HorizontalPodAutoscaler
+metadata:  # Metadata section for the HorizontalPodAutoscaler
+  name: {{ .Release.Name }}-wordpress-hpa  # The name of the HorizontalPodAutoscaler, dynamically set based on the release name
+spec:  # Specification section for the HorizontalPodAutoscaler
+  scaleTargetRef:  # Reference to the target resource to scale (Deployment)
+    apiVersion: apps/v1  # API version for the target resource (Deployment)
+    kind: Deployment  # The kind of the resource being scaled (Deployment)
+    name: {{ .Release.Name }}-wordpress  # The name of the Deployment to scale, dynamically set based on the release name
+  minReplicas: {{ .Values.wordpress.hpa.minReplicas }}  # The minimum number of replicas for scaling, set from values
+  maxReplicas: {{ .Values.wordpress.hpa.maxReplicas }}  # The maximum number of replicas for scaling, set from values
+  metrics:  # Metrics to use for scaling decisions
+    - type: Resource  # Resource-based metric (CPU in this case)
+      resource:  # The resource metric settings
+        name: cpu  # The type of resource to monitor (CPU utilization)
+        target:  # The target utilization for the resource
+          type: Utilization  # Utilization type for scaling (based on percentage)
+          averageUtilization: 50  # The target average CPU utilization (50% in this case)

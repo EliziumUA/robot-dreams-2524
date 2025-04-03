@@ -5,6 +5,11 @@ mkdir homework_11
 cd homework_11
 
 ## Step 1
+microk8s config > ~/.kube/config
+microk8s.kubectl get nodes
+microk8s.kubectl cluster-info
+microk8s.kubectl get all --all-namespaces
+
 nano namespace.yaml
 microk8s.kubectl apply -f namespace.yaml
 
@@ -46,3 +51,22 @@ nano wordpress-hpa.yaml
 microk8s enable metrics-server
 microk8s.kubectl apply -f wordpress-hpa.yaml
 microk8s.kubectl get hpa -n wordpress
+
+sudo apt update && sudo apt install siege -y
+
+curl -k https://wp.local/
+
+siege -c 20 -t 3m http://wp.local
+
+watch microk8s.kubectl get hpa -n wordpress
+watch microk8s.kubectl get pods -n wordpress
+
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+helm create my-wordpress
+
+helm dependency update my-wordpress/
+helm install wp ./my-wordpress/ --kubeconfig ~/.kube/config -n wordpress --create-namespace
+
+microk8s.kubectl get all -n wordpress
+microk8s.kubectl describe ingress -n wordpress
+microk8s.kubectl get pvc -n wordpress

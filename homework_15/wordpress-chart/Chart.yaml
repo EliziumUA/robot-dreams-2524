@@ -1,0 +1,8 @@
+apiVersion: v2  # Specifies the API version for Helm chart (v2 is the current version)
+name: wordpress-chart  # The name of the Helm chart
+version: 0.1.0  # The version of the Helm chart
+description: Helm-чарт для WordPress з MySQL як залежністю  # A description of the Helm chart (WordPress with MySQL as a dependency)
+dependencies:  # List of dependencies for the Helm chart
+  - name: mysql  # Name of the dependency (MySQL)
+    version: 9.19.1  # Version of the MySQL Helm chart to use
+    repository: https://charts.bitnami.com/bitnami  # The repository where the MySQL chart can be found
