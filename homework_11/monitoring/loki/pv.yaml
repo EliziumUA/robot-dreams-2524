@@ -1,0 +1,13 @@
+apiVersion: v1  # Specifies the API version used for the PersistentVolume resource
+kind: PersistentVolume  # The type of resource, which in this case is PersistentVolume for storage
+metadata:  # Metadata about the PersistentVolume
+  name: loki-pv  # The name of the PersistentVolume being created
+spec:  # Specifications for the PersistentVolume
+  capacity:  # Defines the storage capacity of the PersistentVolume
+    storage: 1Gi  # The amount of storage allocated (1 GiB in this case)
+  accessModes:  # Defines how the volume can be accessed by pods
+    - ReadWriteOnce  # Specifies that the volume can be mounted as read-write by a single node
+  persistentVolumeReclaimPolicy: Retain  # Defines the reclaim policy for the PersistentVolume when it is released (Retain means the volume will not be deleted automatically)
+  storageClassName: microk8s-hostpath  # Specifies the storage class to use, in this case 'microk8s-hostpath'
+  hostPath:  # Specifies the host path where the data will be stored on the node
+    path: "/mnt/data/loki"  # The location on the host machine where the PersistentVolume will be mounted

@@ -1,0 +1,11 @@
+apiVersion: v1  # Specifies the API version being used for the resource
+kind: PersistentVolumeClaim  # Defines the type of resource, which is a PersistentVolumeClaim
+metadata:  # Contains metadata about the resource
+  name: busybox-pvc  # The name of the PersistentVolumeClaim
+  namespace: busybox-namespace  # The namespace where the PersistentVolumeClaim is created
+spec:  # Specifies the desired state of the PersistentVolumeClaim
+  accessModes:  # Defines the access modes for the PersistentVolumeClaim
+    - ReadWriteMany  # The PersistentVolumeClaim allows access as read-write by many nodes
+  resources:  # Defines the resource requirements for the PersistentVolumeClaim
+    requests:  # Specifies the requested resources for the PersistentVolumeClaim
+      storage: 1Gi  # Requests 1 GiB of storage for the PersistentVolumeClaim

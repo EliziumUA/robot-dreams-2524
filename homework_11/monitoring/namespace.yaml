@@ -1,0 +1,4 @@
+apiVersion: v1  # Specifies the API version being used for the resource
+kind: Namespace  # Defines the type of resource, which in this case is a Namespace
+metadata:  # Contains metadata about the resource, such as its name
+  name: monitoring-namespace  # The name of the Namespace being created

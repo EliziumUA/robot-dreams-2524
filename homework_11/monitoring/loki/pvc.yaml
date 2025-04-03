@@ -1,0 +1,12 @@
+apiVersion: v1  # Specifies the API version used for the PersistentVolumeClaim resource
+kind: PersistentVolumeClaim  # The type of resource, which in this case is PersistentVolumeClaim for requesting storage
+metadata:  # Metadata about the PersistentVolumeClaim
+  name: loki-pvc  # The name of the PersistentVolumeClaim being created
+  namespace: monitoring-namespace  # The namespace where this PersistentVolumeClaim will be created
+spec:  # Specifications for the PersistentVolumeClaim
+  accessModes:  # Defines how the volume can be accessed by pods
+    - ReadWriteOnce  # Specifies that the volume can be mounted as read-write by a single node
+  resources:  # The requested storage resources
+    requests:  # Requests the amount of storage needed
+      storage: 1Gi  # The amount of storage requested (1 GiB in this case)
+  storageClassName: microk8s-hostpath  # Specifies the storage class to use, in this case 'microk8s-hostpath'

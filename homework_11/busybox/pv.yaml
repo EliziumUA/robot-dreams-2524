@@ -1,0 +1,12 @@
+apiVersion: v1  # Specifies the API version being used for the resource
+kind: PersistentVolume  # Defines the type of resource, which is a PersistentVolume
+metadata:  # Contains metadata about the resource
+  name: busybox-pv  # The name of the PersistentVolume
+spec:  # Specifies the desired state of the PersistentVolume
+  capacity:  # Defines the storage capacity of the PersistentVolume
+    storage: 1Gi  # Specifies the amount of storage available in the PersistentVolume (1 GiB)
+  accessModes:  # Defines the access modes for the PersistentVolume
+    - ReadWriteMany  # The PersistentVolume can be mounted as read-write by many nodes
+  storageClassName: microk8s-hostpath  # Specifies the storage class for this PersistentVolume (e.g., 'microk8s-hostpath' in this case)
+  hostPath:  # Configures the path on the host node where the PersistentVolume will be stored
+    path: "/mnt/data"  # Specifies the path on the host machine to be used for the PersistentVolume

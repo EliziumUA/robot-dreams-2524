@@ -1,0 +1,13 @@
+apiVersion: v1  # Specifies the API version for the resource (Service in this case)
+kind: Service  # Defines the type of resource, which is a Service
+metadata:  # Contains metadata about the Service
+  name: busybox-service  # The name of the Service
+  namespace: busybox-namespace  # The namespace where the Service is created
+spec:  # Specifies the desired state of the Service
+  selector:  # Defines the label selector to identify the pods that the Service will route traffic to
+    app: busybox-app  # The label the Service will match to route traffic to the corresponding pods
+  ports:  # Defines the ports exposed by the Service
+    - protocol: TCP  # The protocol used by the Service (TCP in this case)
+      port: 80  # The port on which the Service will be exposed
+      targetPort: 80  # The port on the pods that the Service will forward traffic to
+  type: ClusterIP  # The type of Service, which exposes the Service on an internal cluster IP (default type)

@@ -1,0 +1,29 @@
+apiVersion: apps/v1  # Specifies the API version used for the Deployment resource
+kind: Deployment  # The type of resource, which in this case is Deployment for managing a set of replica Pods
+metadata:  # Metadata about the Deployment
+  name: prometheus  # The name of the Deployment being created
+  namespace: monitoring-namespace  # The namespace where this Deployment will be created
+spec:  # Specifications for the Deployment
+  replicas: 1  # Specifies the number of replicas (Pods) to be created; here it’s 1
+  selector:  # Defines how the Deployment finds which Pods to manage
+    matchLabels:  # The Deployment will manage Pods with this label
+      app: prometheus  # Label selector to match Pods with the label 'app: prometheus'
+  template:  # Template for the Pods created by this Deployment
+    metadata:  # Metadata about the Pod
+      labels:  # Labels assigned to the Pod
+        app: prometheus  # The label 'app: prometheus' is applied to the Pod
+    spec:  # Specifications for the Pod
+      containers:  # List of containers within the Pod
+        - name: prometheus  # The name of the container
+          image: prom/prometheus  # The Docker image for the Prometheus container
+          args:  # Arguments passed to the container at startup
+            - "--config.file=/etc/prometheus/prometheus.yml"  # Path to the Prometheus configuration file
+          ports:  # List of ports exposed by the container
+            - containerPort: 9090  # Exposes port 9090 for the Prometheus service
+          volumeMounts:  # Mounts volumes into the container's filesystem
+            - name: config-volume  # The volume 'config-volume' will be mounted
+              mountPath: /etc/prometheus/  # Mounts the config volume at /etc/prometheus inside the container
+      volumes:  # List of volumes available to the Pod
+        - name: config-volume  # Volume named 'config-volume' for the Prometheus configuration
+          configMap:  # The source of the config volume is a ConfigMap
+            name: prometheus-config  # The ConfigMap named 'prometheus-config' is used for the configuration

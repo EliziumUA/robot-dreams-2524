@@ -1,0 +1,64 @@
+apiVersion: apps/v1  # Specifies the API version used for the DaemonSet resource
+kind: DaemonSet  # The type of resource, which in this case is DaemonSet for running a copy of a Pod on each node
+metadata:  # Metadata about the DaemonSet
+  name: node-exporter  # The name of the DaemonSet being created
+  namespace: monitoring-namespace  # The namespace where this DaemonSet will be created
+  labels:  # Labels assigned to the DaemonSet
+    app: node-exporter  # The label 'app: node-exporter' is applied to the DaemonSet
+spec:  # Specifications for the DaemonSet
+  selector:  # Defines how the DaemonSet finds which Pods to manage
+    matchLabels:  # The DaemonSet will manage Pods with this label
+      app: node-exporter  # Label selector to match Pods with the label 'app: node-exporter'
+  template:  # Template for the Pods created by this DaemonSet
+    metadata:  # Metadata about the Pod
+      labels:  # Labels assigned to the Pod
+        app: node-exporter  # The label 'app: node-exporter' is applied to the Pod
+    spec:  # Specifications for the Pod
+      hostPID: true  # Allows the Pod to access the host’s PID namespace
+      hostNetwork: true  # Allows the Pod to use the host’s network namespace
+      containers:  # List of containers within the Pod
+        - name: node-exporter  # The name of the container
+          image: quay.io/prometheus/node-exporter:v1.7.0  # The Docker image for the Node Exporter container
+          ports:  # List of ports exposed by the container
+            - name: metrics  # The name for the port (for identification)
+              containerPort: 9100  # Exposes port 9100 for the Node Exporter metrics
+          volumeMounts:  # Mounts volumes into the container's filesystem
+            - name: proc  # The volume 'proc' will be mounted
+              mountPath: /host/proc  # Mounts the /proc directory from the host
+              readOnly: true  # Mount the volume as read-only
+            - name: sys  # The volume 'sys' will be mounted
+              mountPath: /host/sys  # Mounts the /sys directory from the host
+              readOnly: true  # Mount the volume as read-only
+            - name: root  # The volume 'root' will be mounted
+              mountPath: /rootfs  # Mounts the root filesystem from the host
+              readOnly: true  # Mount the volume as read-only
+          args:  # Arguments passed to the container at startup
+            - '--path.procfs=/host/proc'  # Path to the host’s /proc filesystem
+            - '--path.sysfs=/host/sys'  # Path to the host’s /sys filesystem
+            - '--path.rootfs=/rootfs'  # Path to the host’s root filesystem
+      volumes:  # List of volumes available to the Pod
+        - name: proc  # Volume named 'proc' for the /proc directory
+          hostPath:  # The source of the volume is a hostPath
+            path: /proc  # Specifies the path on the host machine to be mounted into the Pod
+        - name: sys  # Volume named 'sys' for the /sys directory
+          hostPath:  # The source of the volume is a hostPath
+            path: /sys  # Specifies the path on the host machine to be mounted into the Pod
+        - name: root  # Volume named 'root' for the root filesystem
+          hostPath:  # The source of the volume is a hostPath
+            path: /  # Specifies the root path on the host machine to be mounted into the Pod
+
+---
+apiVersion: v1  # Specifies the API version used for the Service resource
+kind: Service  # The type of resource, which in this case is Service for exposing network access to a set of Pods
+metadata:  # Metadata about the Service
+  name: node-exporter  # The name of the Service being created
+  namespace: monitoring-namespace  # The namespace where this Service will be created
+  labels:  # Labels assigned to the Service
+    app: node-exporter  # The label 'app: node-exporter' is applied to the Service
+spec:  # Specifications for the Service
+  selector:  # Defines how the Service selects which Pods to route traffic to
+    app: node-exporter  # The Service will route traffic to Pods with the label 'app: node-exporter'
+  ports:  # Specifies the ports exposed by the Service
+    - name: metrics  # The name for the port (for identification)
+      port: 9100  # The port on which the Service will be exposed
+      targetPort: 9100  # The port on the Pods to which traffic is forwarded (should match the container's exposed port)

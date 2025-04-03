@@ -1,0 +1,22 @@
+apiVersion: v1  # Specifies the API version used for the ConfigMap resource
+kind: ConfigMap  # The type of resource, which in this case is ConfigMap for storing configuration data
+metadata:  # Metadata about the ConfigMap
+  name: fluentbit-config  # The name of the ConfigMap being created
+  namespace: monitoring-namespace  # The namespace where this ConfigMap will be created
+data:
+  fluent-bit.conf: |
+    [SERVICE]
+        Flush        5
+        Log_Level    info
+    [INPUT]
+        Name              tail
+        Path              /var/log/containers/*.log
+        Parser            docker
+        Tag               kube.*
+        Refresh_Interval  5
+    [OUTPUT]
+        Name        loki
+        Match       *
+        Host        loki
+        Port        3100
+        Labels      job=my-logs
