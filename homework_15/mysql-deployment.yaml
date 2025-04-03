@@ -15,7 +15,7 @@ spec:  # Specification section for the Deployment
     spec:  # Specification for the pod
       containers:  # List of containers within the pod
         - name: mysql  # Name of the container
-          image: arm64v8/mysql:8.0  # The MySQL Docker image (version 8.0)
+          image: mysql:5.7  # The MySQL Docker image (version 8.0)
           env:  # Environment variables for the container
             - name: MYSQL_ROOT_PASSWORD  # Environment variable for the MySQL root password
               valueFrom:  # References a secret for the password
