@@ -125,3 +125,26 @@ helm install prometheus prometheus-community/prometheus \
 --values prometheus-values.yaml
 
 microk8s.kubectl get all -n monitoring
+
+microk8s.kubectl get pods -n monitoring -l app.kubernetes.io/name=node-exporter
+microk8s.kubectl get pods -n monitoring -l app.kubernetes.io/name=kube-state-metrics
+
+helm show values grafana/loki > loki-default-values.yaml
+
+nano loki-values.yaml
+helm install loki grafana/loki \
+--namespace monitoring \
+--values loki-values.yaml
+
+helm show values grafana/fluent-bit > fluent-default-values.yaml
+
+nano fluentbit-values.yaml
+helm install fluent-bit grafana/fluent-bit \
+--namespace monitoring \
+--values fluentbit-values.yaml
+
+microk8s.kubectl get pods -n monitoring
+microk8s.kubectl get svc -n monitoring
+
+microk8s.kubectl port-forward svc/loki 3100:3100 -n monitoring
+curl http://localhost:3100/ready

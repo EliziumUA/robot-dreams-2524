@@ -1,0 +1,46 @@
+service:
+  type: ClusterIP
+
+backend:
+  type: loki
+  loki:
+    host: loki.monitoring.svc.cluster.local
+    port: 3100
+    tenantID: ""
+
+filters:
+  kubernetes:
+    enabled: true
+    annotations: true
+    labels: true
+    match: "kube.*"
+
+customParsers:
+  enabled: true
+
+extraOutputs: |
+  [OUTPUT]
+      Name loki
+      Match kube.wordpress.*
+      Host loki.monitoring.svc.cluster.local
+      Port 3100
+      Labels job=fluentbit,source=wordpress
+
+  [OUTPUT]
+      Name loki
+      Match kube.mysql.*
+      Host loki.monitoring.svc.cluster.local
+      Port 3100
+      Labels job=fluentbit,source=mysql
+
+  [OUTPUT]
+      Name loki
+      Match kube.node.*
+      Host loki.monitoring.svc.cluster.local
+      Port 3100
+      Labels job=fluentbit,source=node
+
+extraParsers: |
+  [PARSER]
+      Name   json
+      Format json
