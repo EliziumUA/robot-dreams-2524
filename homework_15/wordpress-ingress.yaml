@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1  # Specifies the API version for networking resources
+kind: Ingress  # Defines the resource type as an Ingress
+metadata:  # Metadata section for the Ingress
+  name: wordpress-ingress  # The name of the Ingress resource
+  namespace: wordpress  # The namespace where this Ingress is created
+  annotations:  # Additional annotations for the Ingress
+    nginx.ingress.kubernetes.io/rewrite-target: /  # Ensures requests are properly routed to the backend service
+spec:  # Specification section for the Ingress
+  tls:  # TLS settings for securing the Ingress
+    - hosts:  # List of hostnames that will use TLS encryption
+        - wp.local  # The hostname for the WordPress site
+      secretName: tls-secret  # The name of the TLS secret storing the SSL certificate
+  rules:  # Defines routing rules for incoming requests
+    - host: wp.local  # The hostname that this rule applies to
+      http:  # Specifies HTTP routing rules
+        paths:  # Defines path-based routing
+          - path: /  # The path that this rule applies to
+            pathType: Prefix  # Specifies that the path is a prefix match
+            backend:  # Defines the backend service for handling requests
+              service:
+                name: wordpress  # The name of the Service that receives the traffic
+                port:
+                  number: 80  # The port on which the WordPress service is exposed

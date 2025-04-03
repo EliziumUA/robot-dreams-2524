@@ -38,3 +38,11 @@ microk8s.kubectl apply -f wordpress-deployment.yaml
 
 nano wordpress-service.yaml
 microk8s.kubectl apply -f wordpress-service.yaml
+
+nano wordpress-ingress.yaml
+microk8s.kubectl apply -f wordpress-ingress.yaml
+
+nano wordpress-hpa.yaml
+microk8s enable metrics-server
+microk8s.kubectl apply -f wordpress-hpa.yaml
+microk8s.kubectl get hpa -n wordpress
