@@ -4,84 +4,107 @@ cd roman_podobnyi
 mkdir homework_11
 cd homework_11
 
-## Step 1
+## Part 1
+### Configuring local kubectl to work with microk8s.
 microk8s config > ~/.kube/config
 microk8s.kubectl get nodes
 microk8s.kubectl cluster-info
 microk8s.kubectl get all --all-namespaces
 
+### Create Namespace
 nano namespace.yaml
 microk8s.kubectl apply -f namespace.yaml
 
+### Create ClusterIssuer && Certificate
 nano tls-clusterissuer.yaml
 nano tls-certificate.yaml
 microk8s enable cert-manager
 microk8s.kubectl apply -f tls-clusterissuer.yaml
 microk8s.kubectl apply -f tls-certificate.yaml
 
+### Create Mysql secret
 echo -n "rootpass" | base64
 nano mysql-secret.yaml
 microk8s.kubectl apply -f mysql-secret.yaml
 
+### Create Mysql pvc
 nano mysql-pvc.yaml
 microk8s.kubectl apply -f mysql-pvc.yaml
 
+### Create Mysql configmap
 nano mysql-configmap.yaml
 microk8s.kubectl apply -f mysql-configmap.yaml
 
+### Create Mysql deployment
 nano mysql-deployment.yaml
 microk8s.kubectl apply -f mysql-deployment.yaml
 
+### Create Mysql service
 nano mysql-service.yaml
 microk8s.kubectl apply -f mysql-service.yaml
 
+### Create WordPress pvc
 nano wp-pvc.yaml
 microk8s.kubectl apply -f wp-pvc.yaml
 
+### Create WordPress deployment
 nano wordpress-deployment.yaml
 microk8s.kubectl apply -f wordpress-deployment.yaml
 
+### Create WordPress service
 nano wordpress-service.yaml
 microk8s.kubectl apply -f wordpress-service.yaml
 
+### Create WordPress ingress
 nano wordpress-ingress.yaml
 microk8s.kubectl apply -f wordpress-ingress.yaml
 
+### Configuring HorizontalPodAutoscaler (HPA) for WordPress in Kubernetes.
 nano wordpress-hpa.yaml
 microk8s enable metrics-server
 microk8s.kubectl apply -f wordpress-hpa.yaml
 microk8s.kubectl get hpa -n wordpress
 
+### Installing the Siege utility
 sudo apt update && sudo apt install siege -y
 
+### Checking access to WordPress
 curl -k https://wp.local/
 
+### Conducting a load test
 siege -c 20 -t 3m http://wp.local
 
+### Monitoring HPA response
 watch microk8s.kubectl get hpa -n wordpress
 watch microk8s.kubectl get pods -n wordpress
 
+## Part 2
+### Creating a Helm chart for WordPress with MySQL as a dependency
 curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 helm create my-wordpress
 
+### Adding MySQL dependency
 helm dependency update my-wordpress/
+
+### Installing the Helm chart
 helm install wp ./my-wordpress/ --kubeconfig ~/.kube/config -n wordpress --create-namespace
 
+### Verifying the results
 microk8s.kubectl get all -n wordpress
 microk8s.kubectl describe ingress -n wordpress
 microk8s.kubectl get pvc -n wordpress
 
-# 1. Видалення ресурсу Ingress
+### Deleting the Ingress resource
 microk8s.kubectl delete ingress wordpress-ingress -n wordpress
-# 2. Видалення сервісів
+### Deleting services
 microk8s.kubectl delete svc wordpress -n wordpress
-# 3. Видалення деплойментів
+### Deleting deployments
 microk8s.kubectl delete deployment wordpress -n wordpress
-# 4. Видалення PVC та PV (за потреби)
+### Deleting PVC and PV
 microk8s.kubectl delete pvc wp-pvc -n wordpress
-# 5. Видалення секретів (якщо створювали окремо)
+### Deleting secrets
 microk8s.kubectl delete secret mysql-secret -n wordpress
-# 6. Видалення HPA (якщо створювали)
+### Deleting HPA
 microk8s.kubectl delete hpa wordpress-hpa -n wordpress
 
 
