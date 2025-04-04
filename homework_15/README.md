@@ -107,48 +107,57 @@ microk8s.kubectl delete secret mysql-secret -n wordpress
 ### Deleting HPA
 microk8s.kubectl delete hpa wordpress-hpa -n wordpress
 
-
+### Creating a namespace for monitoring
 microk8s.kubectl create namespace monitoring
 
+### Adding the official Grafana Helm repository
 helm repo add grafana https://grafana.github.io/helm-charts
 helm repo update
 
+### Reviewing the chart parameters
 helm show values grafana/grafana > grafana-default-values.yaml
 
+### Create ClusterIssuer
 nano clusterissuer.yaml
 microk8s.kubectl apply -f clusterissuer.yaml
 
+### Create Certificate
 nano grafana-cert.yaml
 microk8s.kubectl apply -f grafana-cert.yaml
 
+### Create a configuration file
 nano grafana-values.yaml
 helm install grafana grafana/grafana \
 --namespace monitoring \
 --values grafana-values.yaml
 
+### Verifying the results
 microk8s.kubectl get all -n monitoring
+
+### Retrieving the password
 microk8s.kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 
+#### Adding the official Helm repository for Prometheus
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
 
+### Viewing the Helm chart parameters
 helm show values prometheus-community/prometheus > prometheus-default-values.yaml
 
-
-
-
-
-
+### Create Certificate
 nano prometheus-cert.yaml
 microk8s.kubectl apply -f prometheus-cert.yaml
 
+### Configuring the values file
 nano prometheus-values.yaml
 helm install prometheus prometheus-community/prometheus \
 --namespace monitoring \
 --values prometheus-values.yaml
 
+### Verifying the results
 microk8s.kubectl get all -n monitoring
 
+### Checking Node Exporter and kube-state-metrics
 microk8s.kubectl get pods -n monitoring -l app.kubernetes.io/name=node-exporter
 microk8s.kubectl get pods -n monitoring -l app.kubernetes.io/name=kube-state-metrics
 
