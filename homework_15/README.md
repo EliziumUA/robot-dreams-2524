@@ -1,8 +1,8 @@
 ## Create directory
 mkdir roman_podobnyi
 cd roman_podobnyi
-mkdir homework_11
-cd homework_11
+mkdir homework_15
+cd homework_15
 
 ## Part 1
 ### Configuring local kubectl to work with microk8s.
@@ -161,22 +161,28 @@ microk8s.kubectl get all -n monitoring
 microk8s.kubectl get pods -n monitoring -l app.kubernetes.io/name=node-exporter
 microk8s.kubectl get pods -n monitoring -l app.kubernetes.io/name=kube-state-metrics
 
+### Setting up Loki via Helm
 helm show values grafana/loki > loki-default-values.yaml
 
+### Create loki-values.yaml
 nano loki-values.yaml
 helm install loki grafana/loki \
 --namespace monitoring \
 --values loki-values.yaml
 
+### Installing Fluent Bit
 helm show values grafana/fluent-bit > fluent-default-values.yaml
 
+### Create fluentbit-values.yaml
 nano fluentbit-values.yaml
 helm install fluent-bit grafana/fluent-bit \
 --namespace monitoring \
 --values fluentbit-values.yaml
 
+### Checking the services
 microk8s.kubectl get pods -n monitoring
 microk8s.kubectl get svc -n monitoring
 
+### Checking the availability of Loki
 microk8s.kubectl port-forward svc/loki 3100:3100 -n monitoring
 curl http://localhost:3100/ready
