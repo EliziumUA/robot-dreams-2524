@@ -1,0 +1,6 @@
+apiVersion: cert-manager.io/v1  # Specifies the API version for cert-manager
+kind: ClusterIssuer  # Defines the resource type as a ClusterIssuer
+metadata:  # Metadata section for the resource
+  name: wp-cluster-issuer  # The name of the ClusterIssuer
+spec:  # Specification section for the ClusterIssuer
+  selfSigned: {}  # Indicates that this ClusterIssuer is for self-signed certificates

@@ -1,0 +1,12 @@
+apiVersion: v1  # Specifies the API version being used for the resource
+kind: Service  # Defines the resource type as a Service
+metadata:  # Metadata section for the Service
+  name: mysql  # The name of the Service
+  namespace: wordpress  # The namespace where this Service is created
+spec:  # Specification section for the Service
+  selector:  # Defines the selector to match the pods targeted by this service
+    app: mysql  # The label used to select the pods (in this case, pods with label "app=mysql")
+  ports:  # List of ports exposed by the Service
+    - port: 3306  # The port on which the service will be exposed
+      targetPort: 3306  # The port on the pod to forward traffic to (MySQL default port)
+  type: ClusterIP  # The type of the service (ClusterIP is the default, exposes the service within the cluster)

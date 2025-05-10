@@ -1,0 +1,11 @@
+apiVersion: v1  # Specifies the API version for managing services
+kind: Service  # Defines the resource type as a Service
+metadata:  # Metadata section for the Service
+  name: {{ .Release.Name }}-wordpress  # The name of the Service, dynamically set based on the release name
+spec:  # Specification section for the Service
+  selector:  # Defines the selector to match the pods targeted by this Service
+    app: wordpress  # The label used to select the WordPress pods
+  ports:  # List of ports exposed by the Service
+    - port: 80  # The port on which the Service will be accessible within the cluster
+      targetPort: 80  # The port on the pod to which traffic will be forwarded
+  type: ClusterIP  # The type of the Service (ClusterIP exposes it only within the cluster)

@@ -1,0 +1,4 @@
+apiVersion: v1  # Specifies the Kubernetes API version being used
+kind: Namespace  # Defines that this resource is a Namespace
+metadata:  # Metadata section for the resource
+  name: wordpress  # Name of the namespace, used to group related resources

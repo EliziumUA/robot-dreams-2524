@@ -1,0 +1,46 @@
+apiVersion: apps/v1  # Specifies the API version for applications
+kind: Deployment  # Defines the resource type as a Deployment
+metadata:  # Metadata section for the resource
+  name: wordpress  # The name of the Deployment
+  namespace: wordpress  # The namespace in which this Deployment is created
+spec:  # Specification section for the Deployment
+  replicas: 2  # Number of replicas (pods) to create
+  selector:  # Defines the label selector for identifying pods managed by this Deployment
+    matchLabels:
+      app: wordpress  # The label to match the pods managed by this Deployment
+  template:  # Template for the pods that will be created by the Deployment
+    metadata:
+      labels:
+        app: wordpress  # Labels for the pods created by the Deployment
+    spec:  # Specification for the pod
+      containers:  # List of containers within the pod
+        - name: wordpress  # Name of the container
+          image: wordpress:latest  # Docker image for the container
+          env:  # Environment variables for the container
+            - name: WORDPRESS_DB_HOST  # Environment variable for the database host
+              value: mysql.wordpress.svc.cluster.local  # MySQL host address
+            - name: WORDPRESS_DB_USER  # Environment variable for the database username
+              value: root  # MySQL root username
+            - name: WORDPRESS_DB_NAME  # Environment variable for the database name
+              value: wordpress  # Database name used by WordPress
+            - name: WORDPRESS_DB_PASSWORD  # Environment variable for the database password
+              valueFrom:  # References secret for password
+                secretKeyRef:
+                  name: mysql-secret  # Name of the secret containing the password
+                  key: mysql-root-password  # Key in the secret containing the password
+          resources:  # Resources requested and limited for the container
+            requests:  # Minimum resources needed
+              cpu: "250m"  # 250 milli-CPU units requested
+              memory: "256Mi"  # 256 MiB of memory requested
+            limits:  # Maximum resources allowed
+              cpu: "500m"  # 500 milli-CPU units as the maximum
+              memory: "512Mi"  # 512 MiB of memory as the maximum
+          ports:  # Ports exposed by the container
+            - containerPort: 80  # Exposes port 80 for the WordPress container
+          volumeMounts:  # Mounts volumes into the container
+            - name: wp-storage  # Volume name to mount
+              mountPath: /var/www/html  # Path inside the container to mount the volume
+      volumes:  # List of volumes available for the pod
+        - name: wp-storage  # Volume name
+          persistentVolumeClaim:  # Defines a PersistentVolumeClaim for the volume
+            claimName: wp-pvc  # Name of the PersistentVolumeClaim to use

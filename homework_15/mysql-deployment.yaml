@@ -1,0 +1,38 @@
+apiVersion: apps/v1  # Specifies the API version for managing deployments
+kind: Deployment  # Defines the resource type as a Deployment
+metadata:  # Metadata section for the Deployment
+  name: mysql  # The name of the Deployment
+  namespace: wordpress  # The namespace where this Deployment is created
+spec:  # Specification section for the Deployment
+  replicas: 1  # The number of pod replicas to run
+  selector:  # Defines the selector to match the pods managed by this Deployment
+    matchLabels:
+      app: mysql  # The label used to select the MySQL pods
+  template:  # Template for the pods that will be created by the Deployment
+    metadata:
+      labels:
+        app: mysql  # Labels for the pods created by the Deployment
+    spec:  # Specification for the pod
+      containers:  # List of containers within the pod
+        - name: mysql  # Name of the container
+          image: mysql:5.7  # The MySQL Docker image (version 8.0)
+          env:  # Environment variables for the container
+            - name: MYSQL_ROOT_PASSWORD  # Environment variable for the MySQL root password
+              valueFrom:  # References a secret for the password
+                secretKeyRef:
+                  name: mysql-secret  # Name of the secret containing the password
+                  key: mysql-root-password  # Key in the secret containing the password
+          ports:  # Ports exposed by the container
+            - containerPort: 3306  # Exposes MySQL on port 3306
+          volumeMounts:  # Mounts volumes into the container
+            - name: mysql-storage  # Volume for MySQL data persistence
+              mountPath: /var/lib/mysql  # Path inside the container for MySQL data storage
+            - name: initdb  # Volume for initialization scripts
+              mountPath: /docker-entrypoint-initdb.d  # Mount point for database initialization scripts
+      volumes:  # List of volumes available for the pod
+        - name: mysql-storage  # Volume for MySQL data persistence
+          persistentVolumeClaim:
+            claimName: mysql-pvc  # Uses a PersistentVolumeClaim for storage
+        - name: initdb  # Volume for initialization scripts
+          configMap:
+            name: mysql-init-script  # Uses a ConfigMap containing the initialization SQL script

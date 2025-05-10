@@ -1,0 +1,8 @@
+apiVersion: v1  # Specifies the API version being used
+kind: ConfigMap  # Defines the resource type as a ConfigMap
+metadata:  # Metadata section for the resource
+  name: mysql-init-script  # The name of the ConfigMap
+  namespace: wordpress  # The namespace in which this ConfigMap is created
+data:  # Data section where key-value pairs are stored
+  init.sql: |  # The key is "init.sql" and the value is the SQL script content
+    CREATE DATABASE IF NOT EXISTS wordpress;

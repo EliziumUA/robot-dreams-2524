@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: grafana-cert
+  namespace: monitoring
+spec:
+  secretName: grafana-tls-secret
+  duration: 2160h # 90 днів
+  renewBefore: 360h # 15 днів до закінчення
+  subject:
+    organizations:
+      - Example Org
+  commonName: grafana.local
+  dnsNames:
+    - grafana.local
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
